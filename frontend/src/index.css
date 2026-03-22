@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=VT323&family=Creepster&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-gray-100 font-body m-0 p-0 overflow-x-hidden;
+  }
+}
+
+.glass-panel {
+  @apply bg-glassDark backdrop-blur-md border border-gray-800 rounded-xl shadow-lg relative;
+}
+
+.text-glow-red { text-shadow: 0 0 10px #ff003c, 0 0 20px #ff003c; }
+.text-glow-yellow { text-shadow: 0 0 10px #ffee00, 0 0 20px #ffee00; }
+.text-glow-purple { text-shadow: 0 0 10px #b800ff, 0 0 20px #b800ff; }
+
+.mirror-blur {
+  -webkit-box-reflect: below -10px linear-gradient(transparent, rgba(0,0,0,0.4));
+  filter: blur(1px);
+}
+
+/* Atmospheric / Horror Effects */
+.moving-red-smoke {
+  position: fixed;
+  top: 0; left: 0; width: 200vw; height: 100vh;
+  background: transparent url('https://raw.githubusercontent.com/danielstuart14/CSS_FOG_ANIMATION/master/fog1.png') repeat-x;
+  background-size: cover;
+  animation: fog 40s linear infinite;
+  opacity: 0.6;
+  filter: sepia(1) hue-rotate(330deg) saturate(10) brightness(0.6);
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: color-dodge;
+}
+
+.moving-red-smoke-slow {
+  position: fixed;
+  top: 10%; left: 0; width: 200vw; height: 100vh;
+  background: transparent url('https://raw.githubusercontent.com/danielstuart14/CSS_FOG_ANIMATION/master/fog2.png') repeat-x;
+  background-size: cover;
+  animation: fog 60s linear infinite reverse;
+  opacity: 0.4;
+  filter: sepia(1) hue-rotate(330deg) saturate(8) brightness(0.5);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+.dark-red-atmosphere {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #110000 0%, #000000 100%);
+  z-index: -1;
+}
+
+.red-lightning {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 20%, rgba(255, 0, 30, 0.4), transparent 50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: lightning-strike 12s infinite;
+  mix-blend-mode: screen;
+}
+
+.red-lightning-2 {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(255, 0, 60, 0.5), transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: lightning-strike 18s infinite 5s;
+  mix-blend-mode: screen;
+}
+
+@keyframes lightning-strike {
+  0%, 95%, 98%, 100% { opacity: 0; }
+  96% { opacity: 0.8; filter: brightness(2); }
+  96.5% { opacity: 0.2; }
+  97% { opacity: 1; filter: brightness(2.5); }
+}
+
+@keyframes fog {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100vw); }
+}
+
+.particles {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  background-image: radial-gradient(circle, rgba(255,0,60,0.3) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: move-particles 15s linear infinite;
+}
+
+@keyframes move-particles {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-60px); }
+}
+
+/* Background Creepers */
+.bg-creeper-vecna {
+  position: fixed;
+  bottom: -5%;
+  left: -5%;
+  height: 80vh;
+  width: auto;
+  opacity: 0.15;
+  mix-blend-mode: color-dodge;
+  pointer-events: none;
+  z-index: 0;
+  animation: hover-creep 8s ease-in-out infinite;
+  background: url('https://upload.wikimedia.org/wikipedia/commons/parent_directory') no-repeat right bottom;
+}
+
+.bg-creeper-demogorgon {
+  position: fixed;
+  top: -10%;
+  right: -5%;
+  height: 60vh;
+  width: auto;
+  opacity: 0.1;
+  transform: rotate(180deg);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 0;
+  animation: breath-creep 6s ease-in-out infinite alternate;
+}
+
+@keyframes hover-creep {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.15; }
+  50% { transform: translateY(-20px) scale(1.02); opacity: 0.25; }
+}
+
+@keyframes breath-creep {
+  0% { transform: rotate(180deg) scale(1); filter: drop-shadow(0 0 10px red); }
+  100% { transform: rotate(180deg) scale(1.05); filter: drop-shadow(0 0 20px darkred); }
+}
+
+.cinematic-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.95) 100%);
+  z-index: 20;
+}
+
+.glitch-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,0,0,0.05);
+  pointer-events: none;
+  z-index: 30;
+  animation: minor-lightning 12s infinite;
+}
+
+@keyframes bright-flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 15px #ff003c, 0 0 40px #ff003c;
+  }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+    opacity: 0.7;
+    text-shadow: none;
+  }
+}
+
+.animate-bright-flicker {
+  animation: bright-flicker 4s linear infinite;
+}
