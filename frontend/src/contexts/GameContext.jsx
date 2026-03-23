@@ -21,6 +21,8 @@ export const GameProvider = ({ children }) => {
   const refreshState = () => {
     if (appMode === 'LOCAL') {
       setData(localService.getState());
+    } else if (appMode === 'SUPABASE') {
+      supabaseService.fetchState();
     }
   };
 
@@ -139,6 +141,11 @@ export const GameProvider = ({ children }) => {
       const interval = setInterval(() => {
         setData(localService.getState());
       }, 2000);
+      return () => clearInterval(interval);
+    } else if (appMode === 'SUPABASE') {
+      const interval = setInterval(() => {
+        supabaseService.fetchState();
+      }, 5000); // Fallback poll every 5 seconds if Realtime misses an update
       return () => clearInterval(interval);
     }
   }, [appMode]);

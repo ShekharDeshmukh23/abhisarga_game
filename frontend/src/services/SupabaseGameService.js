@@ -32,10 +32,8 @@ class SupabaseGameService {
 
   // --- Realtime & Async Fetching ---
 
-  async initialize() {
-    if (this.isInitialized) return;
+  async fetchState() {
     try {
-      // Fetch initial state
       const [gsRes, teamsRes, answersRes] = await Promise.all([
         supabase.from('game_state').select('*').single(),
         supabase.from('teams').select('*').order('created_at'),
@@ -46,8 +44,19 @@ class SupabaseGameService {
       if (teamsRes.data) this.state.teams = teamsRes.data;
       if (answersRes.data && answersRes.data.length > 0) this.state.answers = answersRes.data;
 
-      this.isInitialized = true;
       this._notify();
+    } catch (err) {
+      console.error('Error fetching Supabase state:', err);
+    }
+  }
+
+  async initialize() {
+    if (this.isInitialized) return;
+    try {
+      // Fetch initial state
+      await this.fetchState();
+
+      this.isInitialized = true;
 
       // Subscribe to Realtime
       this.subscription = supabase.channel('schema-db-changes')
