@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGameData } from '../contexts/GameContext';
 import { CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
+import LevelProgress from '../components/LevelProgress';
 
 const ModPage = () => {
   const { roomNumber } = useParams();
@@ -11,14 +12,14 @@ const ModPage = () => {
 
   const roomTeams = teams.filter(t => t.room_number === parseInt(roomNumber) && t.team_status === 'Playing');
 
-  const handleAnswerSubmit = (teamId, level) => {
+  const handleAnswerSubmit = async (teamId, level) => {
     const answer = answers[teamId] || '';
     if (!answer) return;
 
-    const isCorrect = checkAnswer(teamId, level, answer);
+    const result = await checkAnswer(teamId, level, answer);
     setMessages(prev => ({
       ...prev,
-      [teamId]: isCorrect ? 'Correct! Moving to next level.' : 'Wrong answer!'
+      [teamId]: result.success ? 'Correct! Moving to next level.' : 'Wrong answer!'
     }));
     setAnswers(prev => ({ ...prev, [teamId]: '' }));
 
@@ -27,10 +28,14 @@ const ModPage = () => {
     }, 3000);
   };
 
-  const handlePass = (teamId, level) => {
+  const handlePass = async (teamId, level) => {
     if (window.confirm('Are you sure you want to pass this level manually?')) {
-      passLevel(teamId, level);
-      setMessages(prev => ({ ...prev, [teamId]: 'Level passed manually.' }));
+      const result = await passLevel(teamId, level);
+      if (result.success) {
+        setMessages(prev => ({ ...prev, [teamId]: 'Level passed manually.' }));
+      } else {
+        setMessages(prev => ({ ...prev, [teamId]: result.msg || 'Error passing level' }));
+      }
       setTimeout(() => setMessages(prev => ({ ...prev, [teamId]: null })), 3000);
     }
   };
@@ -51,10 +56,17 @@ const ModPage = () => {
             <div key={team.team_id} className="glass-panel p-6 flex flex-col gap-4 relative overflow-hidden">
               <div className="flex justify-between items-center border-b border-gray-700 pb-2">
                 <h3 className="text-xl font-bold text-white">{team.team_name}</h3>
-                <span className="bg-gray-800 text-neonOrange px-3 py-1 font-digital text-xl rounded">
-                  Level {team.current_level}
-                </span>
               </div>
+
+              <LevelProgress 
+                currentLevel={team.current_level} 
+                teamStatus={team.team_status}
+                levelTimes={[
+                    team.level_1_timer_snapshot,
+                    team.level_2_timer_snapshot,
+                    team.level_3_timer_snapshot
+                ]}
+              />
 
               {team.current_level <= 3 ? (
                 <>

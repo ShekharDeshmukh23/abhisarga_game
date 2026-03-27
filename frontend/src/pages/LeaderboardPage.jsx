@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useGameData } from '../contexts/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import LevelProgress from '../components/LevelProgress';
 
 const LeaderboardPage = () => {
   const { teams, gameState } = useGameData();
@@ -122,27 +123,23 @@ const LeaderboardPage = () => {
     }
   };
 
-  const formatTime = (t) => {
-    const level = t.current_level - 1;
-    if(level === 0) return '---';
-    const snapshotKey = `level_${level}_timer_snapshot`;
-    const timeKey = `level_${level}_time`;
-    if(!t[timeKey]) return '---';
+  const formatLevelTimes = (t) => {
+    const times = [
+      t.level_1_timer_snapshot,
+      t.level_2_timer_snapshot,
+      t.level_3_timer_snapshot
+    ].filter(Boolean);
     
-    // Create base time label. Prefer the captured global timer snapshot if available
-    let label = t[snapshotKey];
-    
-    // Fallback for older saves without the snapshot
-    if (!label) {
-      const d = new Date(t[timeKey]);
-      label = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
-    }
-
-    // Show active penalty/bonus flags on hover
-    if(t.bonus_time_ms > 0) label += " (Bonus)";
-    if(t.penalty_time_ms > 0) label += " (Penalty)";
-    
-    return label;
+    if (times.length === 0) return '---';
+    return (
+      <div className="flex flex-col items-center">
+        {times.map((time, i) => (
+          <div key={i} className="text-[10px] md:text-xs">
+            L{i+1}: {time}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -192,9 +189,9 @@ const LeaderboardPage = () => {
           
           <div className="grid grid-cols-12 gap-2 md:gap-4 border-b border-red-900/50 pb-3 mb-4 text-gray-400 font-bold uppercase tracking-wider text-[10px] md:text-sm px-2">
             <div className="col-span-1 text-center">RANK</div>
-            <div className="col-span-4 pl-2">TEAM</div>
-            <div className="col-span-2 text-center">LEVEL</div>
-            <div className="col-span-3 text-center">LAST COMPLETED</div>
+            <div className="col-span-3 pl-2">TEAM</div>
+            <div className="col-span-3 text-center">PROGRESS</div>
+            <div className="col-span-3 text-center">LEVEL TIMES</div>
             <div className="col-span-2 text-center">STATUS</div>
           </div>
 
@@ -221,14 +218,24 @@ const LeaderboardPage = () => {
                     <div className="col-span-1 text-center font-digital text-2xl md:text-3xl font-bold">
                       {rank}
                     </div>
-                    <div className="col-span-4 font-bold text-base md:text-xl truncate pl-2">
+                    <div className="col-span-3 font-bold text-base md:text-xl truncate pl-2">
                       {team.team_name}
                     </div>
-                    <div className="col-span-2 text-center font-digital text-xl md:text-2xl tracking-widest">
-                      {team.current_level > 3 ? 'FIN' : `L${team.current_level}`}
+                    <div className="col-span-3 text-center flex justify-center">
+                      <div className="w-full max-w-[150px] scale-75 md:scale-95 origin-center">
+                        <LevelProgress 
+                          currentLevel={team.current_level} 
+                          teamStatus={team.team_status}
+                          levelTimes={[
+                              team.level_1_timer_snapshot,
+                              team.level_2_timer_snapshot,
+                              team.level_3_timer_snapshot
+                          ]}
+                        />
+                      </div>
                     </div>
-                    <div className="col-span-3 text-center font-digital text-lg md:text-xl text-gray-300 tracking-widest truncate">
-                      {formatTime(team)}
+                    <div className="col-span-3 text-center font-digital text-gray-300 tracking-widest leading-tight">
+                      {formatLevelTimes(team)}
                     </div>
                     <div className="col-span-2 flex justify-center">
                       <span className={`px-2 md:px-3 py-1 text-[10px] md:text-xs font-bold rounded-full uppercase tracking-widest ${getBadgeStyle(team.team_status)}`}>

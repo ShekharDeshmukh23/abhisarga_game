@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGameData } from '../contexts/GameContext';
 import { Plus, Trash2, Edit } from 'lucide-react';
+import LevelProgress from '../components/LevelProgress';
 
 const TeamsPage = () => {
   const { teams, addTeam, updateTeam, removeTeam } = useGameData();
@@ -86,7 +87,19 @@ const TeamsPage = () => {
                     <tr key={team.team_id} className="border-b border-gray-800 hover:bg-gray-900 transition-colors">
                       <td className="py-3 pl-2 font-bold">{team.team_name}</td>
                       <td className="py-3">Room {team.room_number}</td>
-                      <td className="py-3 font-digital text-xl text-neonOrange">LVL {team.current_level}</td>
+                      <td className="py-3">
+                        <div className="w-48 scale-75 origin-left">
+                          <LevelProgress 
+                            currentLevel={team.current_level} 
+                            teamStatus={team.team_status}
+                            levelTimes={[
+                                team.level_1_timer_snapshot,
+                                team.level_2_timer_snapshot,
+                                team.level_3_timer_snapshot
+                            ]}
+                          />
+                        </div>
+                      </td>
                       <td className="py-3">
                         <select 
                           value={team.team_status}
